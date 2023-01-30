@@ -18,9 +18,9 @@ def _dist_matrix_to_pointwise_feature_vector(dist, weight1, bias1, weight2=None,
     for i in range(len(weight1)):
         value = activation(torch.einsum("bijk,kl->bijl", value, weight1[i]) + bias1[i])
     if ds_op == "max":
-        value = torch.max(value, axis=2).values # maxの場合
+        value = torch.max(value, axis=2).values
     elif ds_op == "sum":
-        value = torch.sum(value, axis=2) # sumの場合
+        value = torch.sum(value, axis=2)
     elif ds_op == "concat":
         value = torch.cat([torch.max(value, axis=2).values, torch.sum(value, axis=1)], dim=2)
     else:
@@ -212,7 +212,6 @@ class TopoRep:
                 self.task_solver = MultiLayerPerceptron(
                     width_list=[self.cls_input_dim, self.output_dim], 
                     activation=cls_act, task=self.task, last_linear=self.last_linear, 
-                    # bias=0.0
                 )
                 self.cls_params = self.task_solver.weight + self.task_solver.bias
             elif self.cls_model == "2-linear":
@@ -220,7 +219,6 @@ class TopoRep:
                 self.task_solver = MultiLayerPerceptron(
                     width_list=[self.cls_input_dim, 64, self.output_dim], 
                     activation=cls_act, task=self.task, last_linear=self.last_linear, 
-                    # bias=0.0
                 )
                 self.cls_params = self.task_solver.weight + self.task_solver.bias
 

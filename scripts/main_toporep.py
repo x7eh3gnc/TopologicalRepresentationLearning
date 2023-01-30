@@ -45,14 +45,8 @@ def learning_process(args_dict, setting_suffix, CV_idx=None, fold_num=10):
     batch_size = args_dict.get("batch_size")
     lr = float(args_dict.get("lr"))
     after_opt = (args_dict.get("after_opt") == 1) # optimize the task-solving network after learning representation
-    dtm_k = int(args_dict.get("dtm_k")) # parameter if we use DTM to obtain topological representation
-    
-    ### File settings ##
-    date_str = args_dict.get("date")
-    exp_id = args_dict.get("exp_id")
 
     ### Reading data files & evaluation metrics ###
-    first_step_criterion = nn.MSELoss()
     trainX = torch.load(f"data/{exp_mode}_train").detach().to(torch.float32)
     testX = torch.load(f"data/{exp_mode}_test").detach().to(torch.float32)
     if "cls" in task:
@@ -82,7 +76,7 @@ def learning_process(args_dict, setting_suffix, CV_idx=None, fold_num=10):
     if CV_idx is not None:
         train_boolian_slice = [i % fold_num != CV_idx for i in range(trainX.shape[0])]
         test_boolian_slice = [i % fold_num == CV_idx for i in range(trainX.shape[0])]
-        testX = trainX[test_boolian_slice, :, :] # テストデータを先に決めておかないとtrainのデータ数が減る
+        testX = trainX[test_boolian_slice, :, :]
         trainX = trainX[train_boolian_slice, :, :]
         testy = trainy[test_boolian_slice]
         trainy = trainy[train_boolian_slice]
@@ -114,7 +108,7 @@ def learning_process(args_dict, setting_suffix, CV_idx=None, fold_num=10):
 
     ### Optimized parameters ###
     params = []
-    for x in model.delay_calc_params: # xはリスト
+    for x in model.delay_calc_params:
         if type(x[0]) is list:
             for y in x:
                 params += y
@@ -202,7 +196,6 @@ def learning_process(args_dict, setting_suffix, CV_idx=None, fold_num=10):
     ret = {}
     
     with torch.no_grad():
-        # 訓練データでの正解率, 損失関数
         train_output = model.entire_network(trainX)
         train_pred_label = [int(x) for x in torch.max(train_output, dim=1).indices]
         count = sum([x == y for x, y in zip(train_pred_label, trainy)])
@@ -279,7 +272,7 @@ if __name__ == "__main__":
         print(f"---------- {fold_num} FOLD CROSS VALIDATION ----------")
         result_list = []
         for i in range(fold_num):
-            _setting_suffix = f"FL4PC_-{i+1}of{fold_num}{setting_suffix}" # , は，setting_suffixの先頭にある
+            _setting_suffix = f"FL4PC_-{i+1}of{fold_num}{setting_suffix}" 
             print(f"----- Cross Validation Index: {i+1} -----")
             res = learning_process(args_dict=args_dict, setting_suffix=_setting_suffix, CV_idx=i, fold_num=fold_num)
             pprint(res)

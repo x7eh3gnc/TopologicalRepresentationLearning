@@ -65,8 +65,6 @@ def learning_process(args_dict, setting_suffix, CV_idx=None, fold_num=10):
     batch_size = args_dict.get("batch_size")
     lr = float(args_dict.get("lr"))
     after_opt = (args_dict.get("after_opt") == 1)
-    date_str = args_dict.get("date")
-    exp_id = args_dict.get("exp_id")
 
     trainX = torch.load(f"data/{exp_mode}_train").detach().to(torch.float32)
     testX = torch.load(f"data/{exp_mode}_test").detach().to(torch.float32)
@@ -194,7 +192,7 @@ def learning_process(args_dict, setting_suffix, CV_idx=None, fold_num=10):
 
     test_output = model.output(testX, rot=rot)
     test_pred_label = [int(x) for x in torch.max(test_output, dim=1).indices]
-    count = sum([x == y for x, y in zip(test_pred_label, testy)]) # ここ，trainyになってたやば（もとはこの書き方じゃなかったので大丈夫だとは思うが）
+    count = sum([x == y for x, y in zip(test_pred_label, testy)]) 
     print(f"Loss (test): {criterion(test_output, testy)}", flush=True) 
     if "cls" in task: 
         print(f"Accuracy (test): {float(count/testX.shape[0])}", flush=True) 

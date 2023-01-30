@@ -60,8 +60,6 @@ def learning_process(args_dict, setting_suffix, CV_idx=None, fold_num=10):
     batch_size = args_dict.get("batch_size")
     lr = float(args_dict.get("lr"))
     after_opt = (args_dict.get("after_opt") == 1)
-    date_str = args_dict.get("date")
-    exp_id = args_dict.get("exp_id")
 
     trainX = torch.load(f"data/{exp_mode}_train").detach().to(torch.float32)
     testX = torch.load(f"data/{exp_mode}_test").detach().to(torch.float32)
